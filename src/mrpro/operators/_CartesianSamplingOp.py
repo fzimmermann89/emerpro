@@ -91,7 +91,7 @@ class CartesianSamplingOp(LinearOperator):
             & (kz_idx >= 0)
             & (kz_idx < sorted_grid_shape.z)
         )
-        if torch.any(inside_encoding_matrix):
+        if torch.any(~inside_encoding_matrix):
             warnings.warn(
                 'K-space points lie outside of the encoding_matrix and will be ignored.'
                 ' Increase the encoding_matrix to include these points.',
@@ -101,15 +101,13 @@ class CartesianSamplingOp(LinearOperator):
             inside_encoding_matrix = rearrange(inside_encoding_matrix, '... kz ky kx -> ... 1 (kz ky kx)')
             inside_encoding_matrix_idx = torch.broadcast_to(torch.arange(0, kidx.shape[-1]), kidx.shape)
             inside_encoding_matrix_idx = inside_encoding_matrix_idx[inside_encoding_matrix]
-            inside_encoding_matrix_idx = torch.reshape(
-                inside_encoding_matrix_idx, (*kidx.shape[:-1], inside_encoding_matrix_idx.shape[-1])
-            )
+            inside_encoding_matrix_idx = torch.reshape(inside_encoding_matrix_idx, (*kidx.shape[:-1], -1))
 
             kidx = torch.take_along_dim(kidx, inside_encoding_matrix_idx, dim=-1)
             self._data_outside_of_encoding_matrix = True
+            self.register_buffer('_inside_encoding_matrix_idx', inside_encoding_matrix_idx)
 
         self.register_buffer('_fft_idx', kidx)
-        self.register_buffer('_inside_encoding_matrix_idx', inside_encoding_matrix_idx)
 
         # we can skip the indexing if the data is already sorted and nothing needs to be excluded
         self._needs_indexing = not torch.all(torch.diff(kidx) == 1) or self._data_outside_of_encoding_matrix
