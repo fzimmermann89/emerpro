@@ -249,9 +249,9 @@ class AcqInfo(MoveDataMixin):
             return Rotation.from_matrix(
                 torch.stack(
                     (
-                        torch.stack((slice_dir.z, slice_dir.y, slice_dir.x), dim=-1),
-                        torch.stack((phase_dir.z, phase_dir.y, phase_dir.x), dim=-1),
-                        torch.stack((read_dir.z, read_dir.y, read_dir.x), dim=-1),
+                        torch.stack((slice_dir.z, phase_dir.z, read_dir.z), dim=-1),
+                        torch.stack((slice_dir.y, phase_dir.y, read_dir.y), dim=-1),
+                        torch.stack((slice_dir.x, phase_dir.x, read_dir.x), dim=-1),
                     ),
                     dim=-2,
                 )
