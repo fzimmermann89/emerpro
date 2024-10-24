@@ -1,9 +1,11 @@
 """Select subset along other dimensions of KData."""
 
 import copy
-from typing import Literal, Self, TypeVar
+from typing import Literal, TypeVar
 
 import torch
+from typing_extensions import Self
+
 from mrpro.data._kdata.KDataProtocol import _KDataProtocol
 from mrpro.data.Rotation import Rotation
 from mrpro.data.SpatialDimension import SpatialDimension

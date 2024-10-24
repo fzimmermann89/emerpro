@@ -3,12 +3,12 @@
 import dataclasses
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Self, TypeVar
 
 import ismrmrd
 import numpy as np
 import torch
 from einops import rearrange
+from typing_extensions import Self, TypeVar
 
 from mrpro.data.MoveDataMixin import MoveDataMixin
 from mrpro.data.Rotation import Rotation
@@ -216,7 +216,9 @@ class AcqInfo(MoveDataMixin):
                 raise ValueError('Spatial dimension is expected to be of shape (N,3)')
             data = data[:, None, :]
             # all spatial dimensions are float32
-            return SpatialDimension[torch.Tensor].from_array_xyz(torch.tensor(data.astype(np.float32)), conversion)
+            return (
+                SpatialDimension[torch.Tensor].from_array_xyz(torch.tensor(data.astype(np.float32))).apply_(conversion)
+            )
 
         acq_idx = AcqIdx(
             k1=tensor(idx['kspace_encode_step_1']),

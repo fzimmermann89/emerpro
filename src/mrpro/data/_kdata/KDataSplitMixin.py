@@ -1,10 +1,12 @@
 """Mixin class to split KData into other subsets."""
 
 import copy
-from typing import Literal, Self, TypeVar
+from typing import Literal, TypeVar
 
 import torch
 from einops import rearrange, repeat
+from typing_extensions import Self
+
 from mrpro.data._kdata.KDataProtocol import _KDataProtocol
 from mrpro.data.AcqInfo import rearrange_acq_info_fields
 from mrpro.data.EncodingLimits import Limits
