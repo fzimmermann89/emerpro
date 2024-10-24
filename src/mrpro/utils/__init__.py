@@ -8,12 +8,12 @@ from mrpro.utils.reshape import broadcast_right, unsqueeze_left, unsqueeze_right
 import mrpro.utils.unit_conversion
 __all__ = [
     "broadcast_right",
-    "modify_acq_info",
     "remove_repeat",
     "slice_profiles",
     "smap",
     "split_idx",
     "typing",
+    "unit_conversion",
     "unsqueeze_left",
     "unsqueeze_right",
     "zero_pad_or_crop"

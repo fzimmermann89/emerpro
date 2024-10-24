@@ -36,7 +36,6 @@ __all__ = [
     "QHeader",
     "Rotation",
     "SpatialDimension",
-    "TrajectoryDescription",
     "acq_filters",
     "enums",
     "traj_calculators"
