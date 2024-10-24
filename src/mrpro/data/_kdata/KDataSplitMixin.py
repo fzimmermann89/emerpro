@@ -14,7 +14,6 @@ from mrpro.data.Rotation import Rotation
 from mrpro.data.SpatialDimension import SpatialDimension
 
 T = TypeVar('T', torch.Tensor, Rotation, SpatialDimension)
-R = TypeVar('R', torch.Tensor, Rotation)
 
 
 class KDataSplitMixin(_KDataProtocol):
@@ -61,7 +60,7 @@ class KDataSplitMixin(_KDataProtocol):
             def split_data_traj(dat_traj: torch.Tensor) -> torch.Tensor:
                 return dat_traj[:, :, :, split_idx, :]
 
-            def split_acq_info_tensor(acq_info: R) -> R:
+            def split_acq_info(acq_info: T) -> T:
                 return acq_info[:, :, split_idx, ...]
 
             # Rearrange other_split and k1 dimension
@@ -74,7 +73,7 @@ class KDataSplitMixin(_KDataProtocol):
             def split_data_traj(dat_traj: torch.Tensor) -> torch.Tensor:
                 return dat_traj[:, :, split_idx, :, :]
 
-            def split_acq_info_tensor(acq_info: R) -> R:
+            def split_acq_info(acq_info: T) -> T:
                 return acq_info[:, split_idx, ...]
 
             # Rearrange other_split and k1 dimension
@@ -101,14 +100,6 @@ class KDataSplitMixin(_KDataProtocol):
         kheader = copy.deepcopy(self.header)
 
         # Update shape of acquisition info index
-        def split_acq_info(field: T) -> T:
-            if isinstance(field, SpatialDimension):
-                return SpatialDimension(
-                    z=split_acq_info_tensor(field.z), y=split_acq_info_tensor(field.y), x=split_acq_info_tensor(field.x)
-                )
-            else:
-                return split_acq_info_tensor(field)
-
         kheader.acq_info._apply_(
             lambda field: rearrange_acq_info_fields(split_acq_info(field), rearrange_pattern_acq_info)
         )
