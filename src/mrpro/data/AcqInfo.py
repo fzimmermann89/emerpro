@@ -208,17 +208,13 @@ class AcqInfo(MoveDataMixin):
                 data_tensor = data_tensor[None, None]
             return data_tensor
 
-        def spatialdimension_2d(
-            data: np.ndarray, conversion: Callable[[torch.Tensor], torch.Tensor] | None = None
-        ) -> SpatialDimension[torch.Tensor]:
+        def spatialdimension_2d(data: np.ndarray) -> SpatialDimension[torch.Tensor]:
             # Ensure spatial dimension is (k1*k2*other, 1, 3)
             if data.ndim != 2:
                 raise ValueError('Spatial dimension is expected to be of shape (N,3)')
             data = data[:, None, :]
             # all spatial dimensions are float32
-            return (
-                SpatialDimension[torch.Tensor].from_array_xyz(torch.tensor(data.astype(np.float32))).apply_(conversion)
-            )
+            return SpatialDimension[torch.Tensor].from_array_xyz(torch.tensor(data.astype(np.float32)))
 
         acq_idx = AcqIdx(
             k1=tensor(idx['kspace_encode_step_1']),
@@ -240,23 +236,6 @@ class AcqInfo(MoveDataMixin):
             user7=tensor(idx['user'][:, 7]),
         )
 
-        # Calculate orientation as rotation matrix from directional cosines
-        def orientation_from_directional_cosine(
-            slice_dir: SpatialDimension[torch.Tensor],
-            phase_dir: SpatialDimension[torch.Tensor],
-            read_dir: SpatialDimension[torch.Tensor],
-        ) -> Rotation:
-            return Rotation.from_matrix(
-                torch.stack(
-                    (
-                        torch.stack((slice_dir.z, phase_dir.z, read_dir.z), dim=-1),
-                        torch.stack((slice_dir.y, phase_dir.y, read_dir.y), dim=-1),
-                        torch.stack((slice_dir.x, phase_dir.x, read_dir.x), dim=-1),
-                    ),
-                    dim=-2,
-                )
-            )
-
         acq_info = cls(
             idx=acq_idx,
             acquisition_time_stamp=tensor_2d(headers['acquisition_time_stamp']),
@@ -270,14 +249,14 @@ class AcqInfo(MoveDataMixin):
             flags=tensor_2d(headers['flags']),
             measurement_uid=tensor_2d(headers['measurement_uid']),
             number_of_samples=tensor_2d(headers['number_of_samples']),
-            orientation=orientation_from_directional_cosine(
+            orientation=Rotation.from_directions(
                 spatialdimension_2d(headers['slice_dir']),
                 spatialdimension_2d(headers['phase_dir']),
                 spatialdimension_2d(headers['read_dir']),
             ),
-            patient_table_position=spatialdimension_2d(headers['patient_table_position'], mm_to_m),
+            patient_table_position=spatialdimension_2d(headers['patient_table_position']).apply_(mm_to_m),
             physiology_time_stamp=tensor_2d(headers['physiology_time_stamp']),
-            position=spatialdimension_2d(headers['position'], mm_to_m),
+            position=spatialdimension_2d(headers['position']).apply_(mm_to_m),
             sample_time_us=tensor_2d(headers['sample_time_us']),
             scan_counter=tensor_2d(headers['scan_counter']),
             trajectory_dimensions=tensor_2d(headers['trajectory_dimensions']).fill_(3),  # see above
