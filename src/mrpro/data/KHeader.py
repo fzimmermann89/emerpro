@@ -110,7 +110,8 @@ class KHeader(MoveDataMixin):
     """Name of the patient."""
 
     _misc: dict = dataclasses.field(default_factory=dict)  # do not use {} here!
-    """Dictionary with miscellaneous parameters."""
+    """Dictionary with miscellaneous parameters. These parameters are for information purposes only. Reconstruction
+    algorithms should not rely on them."""
 
     @property
     def fa_degree(self) -> torch.Tensor | None:
