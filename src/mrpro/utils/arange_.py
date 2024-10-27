@@ -9,7 +9,7 @@ def arange_(tensor: torch.Tensor, dim: int) -> None:
 
     Modifies the values in the tensor, such that each view obtained by
     indexing with a single index in `dim` consistes of constant values, and
-    each slice with one remaining dimension along `dim` will only contain 
+    each slice with one remaining dimension along `dim` will only contain
     increasing integers.
 
     Parameters
