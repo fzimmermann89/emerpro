@@ -1,11 +1,16 @@
-"""Fill tensor in-place along a specified dimension with increasing integers."""
+"""Fill tensor in-place with integers increasing along a dimension."""
 
 import torch
 
 
 def arange_(tensor: torch.Tensor, dim: int) -> None:
     """
-    Fill tensor in-place along a specified dimension with increasing integers.
+    Fill tensor in-place with integers increasing along a dimension.
+
+    Modifies the values in the tensor, such that each view obtained by
+    indexing with a single index in `dim` consistes of constant values, and
+    each slice with one remaining dimension along `dim` will only contain 
+    increasing integers.
 
     Parameters
     ----------
@@ -13,7 +18,7 @@ def arange_(tensor: torch.Tensor, dim: int) -> None:
         The tensor to be modified in-place.
 
     dim
-        The dimension along which to fill with increasing values.
+        The dimension along which the resulting values will be increasing
     """
     if not -tensor.ndim <= dim < tensor.ndim:
         raise IndexError(f'Dimension {dim} is out of range for tensor with {tensor.ndim} dimensions.')
