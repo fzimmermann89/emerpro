@@ -8,7 +8,7 @@ def arange_(tensor: torch.Tensor, dim: int) -> None:
     Fill tensor in-place with integers increasing along a dimension.
 
     Modifies the values in the tensor, such that each view obtained by
-    indexing with a single index in `dim` consistes of constant values, and
+    indexing with a single index in `dim` consists of constant values, and
     each slice with one remaining dimension along `dim` will only contain
     increasing integers.
 
